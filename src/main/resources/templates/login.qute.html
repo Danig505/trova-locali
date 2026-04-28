@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Ricettario</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .auth-card {
+            background: white;
+            padding: 40px;
+            width: 320px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .auth-card h2 { color: #e67e22; margin-top: 0; margin-bottom: 25px; }
+        .input-group { text-align: left; margin-bottom: 20px; }
+        .input-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #555; }
+        .input-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; transition: 0.3s; }
+        .input-group input:focus { border-color: #e67e22; outline: none; box-shadow: 0 0 5px rgba(230,126,34,0.3); }
+        .btn-submit { width: 100%; padding: 12px; background-color: #e67e22; color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 1em; cursor: pointer; transition: 0.3s; margin-bottom: 10px; }
+        .btn-submit:hover { background-color: #d35400; }
+        .error-message { color: #e74c3c; background-color: #fadbd8; padding: 10px; border-radius: 6px; font-size: 0.9em; font-weight: bold; margin-bottom: 20px; }
+        .links { font-size: 0.9em; color: #666; margin-top: 15px; }
+        .links a { color: #e67e22; text-decoration: none; font-weight: bold; }
+        .links a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<div class="auth-card">
+    <h2>Bentornato!</h2>
+
+    {#if errore}
+        <div class="error-message">{errore}</div>
+    {/if}
+
+    <form action="j_security_check" method="post">
+        <div class="input-group">
+            <label for="username">Username</label>
+            <input type="text" name="j_username" id="username" placeholder="Inserisci username" required>
+        </div>
+        <div class="input-group">
+            <label for="password">Password</label>
+            <input type="password" name="j_password" id="password" placeholder="Inserisci password" required>
+        </div>
+
+        <button type="submit" class="btn-submit">Accedi</button>
+    </form>
+
+    <div class="links">
+        Non hai un account? <a href="/register">Registrati qui</a>
+    </div>
+</div>
+
+</body>
+</html>

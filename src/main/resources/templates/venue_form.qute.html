@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>{#if recipe}Modifica Locale{#else}Nuovo Locale{/if} - TrovaLocali</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0; padding: 40px 20px;
+            color: #333;
+        }
+        .form-card {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            border-top: 5px solid #3498db;
+        }
+        h1 { color: #2c3e50; margin-top: 0; font-size: 2em; border-bottom: 2px solid #f1f1f1; padding-bottom: 15px; }
+
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: bold; margin-bottom: 8px; color: #34495e; }
+
+        input[type="text"], input[type="number"], select, textarea {
+            width: 100%; padding: 12px;
+            border: 1px solid #ccc; border-radius: 6px;
+            font-size: 1em; font-family: inherit; box-sizing: border-box;
+            transition: 0.3s border-color;
+        }
+        input:focus, select:focus, textarea:focus { border-color: #3498db; outline: none; }
+
+        .gps-container {
+            display: flex; gap: 15px; background: #e8f4f8; padding: 15px; border-radius: 8px; border: 1px solid #d1ecf1;
+        }
+        .gps-box { flex: 1; }
+        .gps-help { font-size: 0.85em; color: #2980b9; margin-top: 5px; font-style: italic; }
+
+        .btn-submit {
+            background: #27ae60; color: white; border: none;
+            padding: 15px 20px; border-radius: 6px; font-size: 1.1em;
+            cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s;
+            margin-top: 10px;
+        }
+        .btn-submit:hover { background: #219653; transform: translateY(-2px); }
+
+        .back-link {
+            display: inline-block; margin-top: 25px; color: #7f8c8d; text-decoration: none;
+            font-weight: bold; transition: 0.3s; text-align: center; width: 100%;
+        }
+        .back-link:hover { color: #e74c3c; }
+    </style>
+</head>
+<body>
+
+<div class="form-card">
+    <h1>{#if recipe}✏️ Modifica Locale{#else}📍 Aggiungi Nuovo Locale{/if}</h1>
+
+    <form action="/venues/save" method="post">
+
+        <input type="hidden" name="id" value="{recipe.id ?: ''}">
+
+        <div class="form-group">
+            <label>Nome del Locale</label>
+            <input type="text" name="title" value="{recipe.title ?: ''}" placeholder="Es. Pizzeria Da Mario" required>
+        </div>
+
+        <div class="form-group">
+            <label>Categorie</label>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; background: #fff; padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
+                <label><input type="checkbox" name="category" value="Ristorante" {#if recipe && recipe.categories.contains('Ristorante')}checked{/if}> 🍝 Ristorante</label>
+                <label><input type="checkbox" name="category" value="Pizzeria" {#if recipe && recipe.categories.contains('Pizzeria')}checked{/if}> 🍕 Pizzeria</label>
+                <label><input type="checkbox" name="category" value="Pub" {#if recipe && recipe.categories.contains('Pub')}checked{/if}> 🍺 Pub / Birreria</label>
+                <label><input type="checkbox" name="category" value="Bar" {#if recipe && recipe.categories.contains('Bar')}checked{/if}> ☕ Bar / Caffetteria</label>
+                <label><input type="checkbox" name="category" value="Gelateria" {#if recipe && recipe.categories.contains('Gelateria')}checked{/if}> 🍦 Gelateria</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>📸 Foto del Locale (Link Web)</label>
+            <textarea name="photos" rows="3" placeholder="Incolla qui i link delle immagini (es. https://...), uno per riga!">{#if recipe}{#for p in recipe.photos}{p}&#10;{/for}{/if}</textarea>
+            <div style="font-size: 0.85em; color: #7f8c8d; margin-top: 5px;">💡 Trova una foto su internet, fai tasto destro -> "Copia l'indirizzo dell'immagine" e incollalo qui. Vai a capo per aggiungerne altre!</div>
+        </div>
+
+        <div class="form-group">
+            <label>Indirizzo Completo</label>
+            <input type="text" name="address" value="{recipe.address ?: ''}" placeholder="Via Roma 1, Milano" required>
+        </div>
+
+        <div class="form-group">
+            <label>🌍 Coordinate Geografiche</label>
+            <div class="gps-container">
+                <div class="gps-box">
+                    <label style="font-size: 0.9em; margin-bottom: 4px;">Latitudine</label>
+                    <input type="number" step="any" name="latitude" value="{recipe.latitude ?: ''}" placeholder="Es. 45.4642" required>
+                </div>
+                <div class="gps-box">
+                    <label style="font-size: 0.9em; margin-bottom: 4px;">Longitudine</label>
+                    <input type="number" step="any" name="longitude" value="{recipe.longitude ?: ''}" placeholder="Es. 9.1900" required>
+                </div>
+            </div>
+            <div class="gps-help">💡 Suggerimento: Apri Google Maps, fai clic col tasto destro sul locale e copia i due numeretti!</div>
+        </div>
+
+        <div class="form-group">
+            <label>Descrizione del locale</label>
+            <textarea name="description" rows="5" placeholder="Descrivi l'atmosfera, i piatti forti, ecc..." required>{recipe.description ?: ''}</textarea>
+        </div>
+
+        <button type="submit" class="btn-submit">
+            {#if recipe}💾 Salva Modifiche{#else}🚀 Pubblica Locale{/if}
+        </button>
+    </form>
+
+    <a href="/venues" class="back-link">&larr; Annulla e torna alla Home</a>
+</div>
+
+</body>
+</html>

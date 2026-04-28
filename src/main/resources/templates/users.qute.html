@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestione Utenti</title>
+    <style>
+        body { font-family: sans-serif; background: #f8f9fa; padding: 40px; color: #333; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h1 { color: #8e44ad; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 15px; border-bottom: 1px solid #eee; text-align: left; }
+        th { background-color: #f1f3f5; color: #555; }
+        .btn { padding: 8px 15px; border: none; background: #8e44ad; color: white; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn:hover { background: #9b59b6; }
+        select { padding: 8px; border-radius: 4px; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>👥 Gestione Utenti</h1>
+    <p>Benvenuto <strong>{username}</strong>. Da qui puoi promuovere gli utenti a Moderatori.</p>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Username</th>
+            <th>Ruolo Attuale</th>
+            <th>Cambia Ruolo</th>
+        </tr>
+        </thead>
+        <tbody>
+        {#for u in users}
+            <tr>
+                <td style="font-size: 1.1em;"><strong>{u.username}</strong></td>
+                <td>
+                    {#if u.role == 'MODERATOR' || u.role == 'ADMIN'}
+                        <span style="color: #27ae60; font-weight: bold;">Moderatore</span>
+                    {#else}
+                        <span style="color: #7f8c8d;">Utente Normale</span>
+                    {/if}
+                </td>
+                <td>
+                    {#if u.username != username}
+                        <form action="/admin/update-role" method="post" style="margin: 0; display:flex; gap:10px;">
+                            <input type="hidden" name="id" value="{u.id}">
+                            <select name="role">
+                                <option value="USER" {#if u.role == 'USER'}selected{/if}>Utente</option>
+                                <option value="MODERATOR" {#if u.role == 'MODERATOR' || u.role == 'ADMIN'}selected{/if}>Moderatore</option>
+                            </select>
+                            <button type="submit" class="btn">Aggiorna</button>
+                        </form>
+                    {#else}
+                        <span style="color: #95a5a6; font-style: italic;">Questo sei tu</span>
+                    {/if}
+                </td>
+            </tr>
+        {/for}
+        </tbody>
+    </table>
+
+    <br><br>
+    <a href="/venues" style="color: #3498db; text-decoration: none; font-weight: bold;">&larr; Torna alla Home</a>
+</div>
+</body>
+</html>

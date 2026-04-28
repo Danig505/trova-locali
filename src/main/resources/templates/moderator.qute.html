@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Pannello Moderazione</title>
+    <style>
+        body { font-family: sans-serif; background: #f8f9fa; padding: 40px; color: #333; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+
+        .tab-menu { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+        .tab-btn { background: none; border: none; padding: 10px 20px; font-size: 1.1em; font-weight: bold; color: #7f8c8d; cursor: pointer; border-radius: 6px 6px 0 0; transition: 0.3s; }
+        .tab-btn:hover { background: #f1f5f9; color: #34495e; }
+        .tab-btn.active { color: #2c3e50; border-bottom: 3px solid #3498db; margin-bottom: -12px; } /* Il tab selezionato */
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .review-card { border-left: 4px solid #f39c12; background: #fdfbf7; padding: 15px; margin-bottom: 15px; border-radius: 4px; }
+        .review-card.updated { border-left: 4px solid #3498db; background: #f0f8ff; }
+
+        .btn { padding: 8px 15px; text-decoration: none; color: white; border-radius: 4px; font-weight: bold; font-size: 0.9em; margin-right: 10px; display: inline-block; }
+        .btn-approve { background: #27ae60; }
+        .btn-reject { background: #e74c3c; }
+
+        .diff-box { display: flex; gap: 15px; margin-top: 10px; background: white; padding: 15px; border-radius: 6px; border: 1px solid #e2e8f0; }
+        .diff-col { flex: 1; }
+        .diff-label { font-size: 0.8em; text-transform: uppercase; font-weight: bold; color: #7f8c8d; margin-bottom: 5px; }
+        .old-text { color: #e74c3c; text-decoration: line-through; margin: 0; }
+        .new-text { color: #27ae60; margin: 0; font-weight: 500; }
+        .badge { background: #e74c3c; color: white; border-radius: 50%; padding: 2px 8px; font-size: 0.8em; margin-left: 5px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🛡️ Pannello di Moderazione</h1>
+    <p style="color: #64748b;">Gestisci le recensioni degli utenti scegliendo la sezione qui sotto.</p>
+
+    <div class="tab-menu">
+        <button class="tab-btn active" onclick="openTab('tab-nuove', this)">
+            🌟 Nuove Recensioni
+            {#if !newReviews.isEmpty()}<span class="badge">{newReviews.size}</span>{/if}
+        </button>
+        <button class="tab-btn" onclick="openTab('tab-modificate', this)">
+            ✏️ Recensioni Modificate
+            {#if !updatedReviews.isEmpty()}<span class="badge">{updatedReviews.size}</span>{/if}
+        </button>
+    </div>
+
+    <div id="tab-nuove" class="tab-content active">
+        {#if newReviews.isEmpty()}
+            <div style="background: #e8f8f5; border: 1px solid #a3e4d7; padding: 20px; border-radius: 8px;">
+                <p style="color: #27ae60; font-weight: bold; margin: 0;">✨ Nessuna nuova recensione in attesa.</p>
+            </div>
+        {#else}
+            {#for r in newReviews}
+                <div class="review-card">
+                    <p style="margin-top:0;"><strong>Locale:</strong> {r.venue.title}</p>
+                    <p><strong>Utente:</strong> {r.user.username} | <strong>Voto:</strong> {r.rating} Stelle</p>
+                    <p><strong>Commento:</strong> "{r.comment}"</p>
+                    <div style="margin-top: 15px;">
+                        <a href="/moderator/approve/{r.id}" class="btn btn-approve">✅ Approva</a>
+                        <a href="/moderator/reject/{r.id}" class="btn btn-reject">❌ Rifiuta</a>
+                    </div>
+                </div>
+            {/for}
+        {/if}
+    </div>
+
+    <div id="tab-modificate" class="tab-content">
+        {#if updatedReviews.isEmpty()}
+            <div style="background: #e8f8f5; border: 1px solid #a3e4d7; padding: 20px; border-radius: 8px;">
+                <p style="color: #27ae60; font-weight: bold; margin: 0;">✨ Nessuna modifica in attesa.</p>
+            </div>
+        {#else}
+            {#for r in updatedReviews}
+                <div class="review-card updated">
+                    <p style="margin-top:0;"><strong>Locale:</strong> {r.venue.title}</p>
+                    <p><strong>Utente:</strong> L'utente <strong>{r.user.username}</strong> sta chiedendo di modificare la sua recensione.</p>
+
+                    <div class="diff-box">
+                        <div class="diff-col" style="border-right: 1px solid #e2e8f0; padding-right: 10px;">
+                            <div class="diff-label">Versione Precedente</div>
+                            <p class="old-text">Voto: {r.oldRating} Stelle</p>
+                            <p class="old-text">"{r.oldComment}"</p>
+                        </div>
+                        <div class="diff-col" style="padding-left: 10px;">
+                            <div class="diff-label">Nuova Versione</div>
+                            <p class="new-text">Voto: {r.rating} Stelle</p>
+                            <p class="new-text">"{r.comment}"</p>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 15px;">
+                        <a href="/moderator/approve/{r.id}" class="btn btn-approve">✅ Approva Modifica</a>
+                        <a href="/moderator/reject/{r.id}" class="btn btn-reject">❌ Rifiuta (Mantieni vecchia)</a>
+                    </div>
+                </div>
+            {/for}
+        {/if}
+    </div>
+
+    <br><br>
+    <a href="/venues" style="color: #3498db; text-decoration: none; font-weight: bold;">&larr; Torna alla Home</a>
+</div>
+
+<script>
+    function openTab(tabId, element) {
+        var contents = document.getElementsByClassName("tab-content");
+        for (var i = 0; i < contents.length; i++) {
+            contents[i].classList.remove("active");
+        }
+
+        var buttons = document.getElementsByClassName("tab-btn");
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].classList.remove("active");
+        }
+
+        document.getElementById(tabId).classList.add("active");
+        element.classList.add("active");
+    }
+</script>
+</body>
+</html>
