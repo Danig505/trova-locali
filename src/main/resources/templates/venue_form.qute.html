@@ -51,6 +51,14 @@
             font-weight: bold; transition: 0.3s; text-align: center; width: 100%;
         }
         .back-link:hover { color: #e74c3c; }
+
+        /* Stile per il bottone di verifica */
+        .btn-verify {
+            background: #3498db; color: white; border: none; border-radius: 6px;
+            padding: 0 20px; font-weight: bold; cursor: pointer; transition: 0.3s;
+            white-space: nowrap; font-size: 1em;
+        }
+        .btn-verify:hover { background: #2980b9; }
     </style>
 </head>
 <body>
@@ -86,7 +94,11 @@
 
         <div class="form-group">
             <label>Indirizzo Completo</label>
-            <input type="text" name="address" value="{recipe.address ?: ''}" placeholder="Via Roma 1, Milano" required>
+            <div style="display: flex; gap: 10px; margin-bottom: 5px;">
+                <input type="text" id="address" name="address" value="{recipe.address ?: ''}" placeholder="Via Roma 1, Milano" required style="margin-bottom: 0;">
+                <button type="button" class="btn-verify" onclick="verifyAddress()">🔍 Verifica</button>
+            </div>
+            <p id="address-feedback" style="font-size: 0.85em; font-weight: bold; margin-top: 5px; margin-bottom: 0; min-height: 20px;"></p>
         </div>
 
         <div class="form-group">
@@ -116,6 +128,39 @@
 
     <a href="/venues" class="back-link">&larr; Annulla e torna alla Home</a>
 </div>
+
+<script>
+    function verifyAddress() {
+        const addressInput = document.getElementById('address').value;
+        const feedback = document.getElementById('address-feedback');
+
+        if (!addressInput.trim()) {
+            feedback.innerHTML = "❌ Inserisci un indirizzo prima di verificare.";
+            feedback.style.color = "#e74c3c";
+            return;
+        }
+
+        feedback.innerHTML = "⏳ Sto verificando sui server di OpenStreetMap...";
+        feedback.style.color = "#7f8c8d";
+
+        fetch('https://nominatim.openstreetmap.org/search?format=json&countrycodes=it&q=' + encodeURIComponent(addressInput))
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    const nomeUfficiale = data[0].display_name;
+                    feedback.innerHTML = "✅ Indirizzo trovato!<br><span style='color: #64748b; font-weight: normal; font-size: 0.9em;'>" + nomeUfficiale + "</span>";
+                    feedback.style.color = "#27ae60";
+                } else {
+                    feedback.innerHTML = "⚠️ Indirizzo non trovato sulla mappa. Sicuro che sia scritto bene?";
+                    feedback.style.color = "#f39c12";
+                }
+            })
+            .catch(error => {
+                feedback.innerHTML = "❌ Errore di connessione al servizio di mappa.";
+                feedback.style.color = "#e74c3c";
+            });
+    }
+</script>
 
 </body>
 </html>
