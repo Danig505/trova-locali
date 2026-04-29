@@ -3,87 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrazione Utente</title>
+    <title>Registrazione - TrovaLocali</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            background: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.7)),
+            url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1920&auto=format&fit=crop') no-repeat center center/cover;
         }
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        .auth-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 40px;
             width: 100%;
             max-width: 400px;
-        }
-        h2 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 20px;
-        }
-        .error-box {
-            background-color: #f8d7da;
-            color: #721c24;
-            padding: 10px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            text-align: center;
-            border: 1px solid #f5c6cb;
-            font-weight: bold;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            color: #666;
-            font-weight: bold;
-        }
-        input[type="text"], input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
             box-sizing: border-box;
         }
-        button {
-            width: 100%;
-            padding: 12px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        .login-link {
-            display: block;
-            text-align: center;
-            margin-top: 15px;
-            text-decoration: none;
-            color: #007bff;
-            font-size: 14px;
-        }
-        .login-link:hover {
-            text-decoration: underline;
-        }
+        .logo-container { text-align: center; margin-bottom: 20px; }
+        .logo { font-weight: 800; font-size: 2em; color: #2c3e50; text-decoration: none; display: inline-block; }
+        .logo span { color: #3498db; }
+
+        .auth-card h2 { color: #2c3e50; text-align: center; margin-top: 0; margin-bottom: 25px; font-weight: 700; font-size: 1.3em; }
+
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-weight: 600; margin-bottom: 6px; color: #475569; font-size: 0.9em; }
+        .input-group input { width: 100%; padding: 12px 15px; border: 2px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; transition: 0.3s; font-family: inherit; font-size: 1em; }
+        .input-group input:focus { border-color: #3498db; outline: none; background: #f8fafc; }
+
+        .btn-submit { width: 100%; padding: 14px; background-color: #3498db; color: white; border: none; border-radius: 8px; font-weight: 700; font-size: 1.1em; cursor: pointer; transition: 0.3s; margin-top: 15px; }
+        .btn-submit:hover { background-color: #2980b9; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3); }
+
+        .error-box { background-color: #fef2f2; color: #e74c3c; padding: 12px; border-radius: 8px; font-size: 0.9em; font-weight: bold; margin-bottom: 20px; text-align: center; border: 1px solid #fecaca; }
+
+        .links { text-align: center; margin-top: 25px; font-size: 0.95em; color: #64748b; }
+        .links a { color: #3498db; text-decoration: none; font-weight: 700; transition: 0.3s; }
+        .links a:hover { color: #2980b9; text-decoration: underline; }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div class="auth-card">
+    <div class="logo-container">
+        <a href="/venues" class="logo">Trova<span>Locali</span></a>
+    </div>
+
     <h2>Crea un Account</h2>
 
     {#if error}
@@ -94,25 +64,27 @@
 
     <form action="/register" method="POST">
 
-        <div class="form-group">
+        <div class="input-group">
             <label for="username">Username</label>
             <input type="text" id="username" name="username" placeholder="Scegli un username" required>
         </div>
 
-        <div class="form-group">
+        <div class="input-group">
             <label for="password">Password</label>
             <input type="password" id="password" name="password" placeholder="Minimo 6 caratteri" required>
         </div>
 
-        <div class="form-group">
+        <div class="input-group">
             <label for="confirmPassword">Conferma Password</label>
             <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Ripeti la password" required>
         </div>
 
-        <button type="submit">Registrati</button>
+        <button type="submit" class="btn-submit">Registrati</button>
     </form>
 
-    <a href="/login" class="login-link">Hai già un account? Accedi qui</a>
+    <div class="links">
+        Hai già un account? <a href="/login">Accedi qui</a>
+    </div>
 </div>
 
 </body>

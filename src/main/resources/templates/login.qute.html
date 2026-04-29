@@ -3,42 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Ricettario</title>
+    <title>Login - TrovaLocali</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            background: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.7)),
+            url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1920&auto=format&fit=crop') no-repeat center center/cover;
         }
         .auth-card {
-            background: white;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             padding: 40px;
-            width: 320px;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-            text-align: center;
+            width: 100%;
+            max-width: 380px;
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            box-sizing: border-box;
         }
-        .auth-card h2 { color: #e67e22; margin-top: 0; margin-bottom: 25px; }
-        .input-group { text-align: left; margin-bottom: 20px; }
-        .input-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #555; }
-        .input-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; transition: 0.3s; }
-        .input-group input:focus { border-color: #e67e22; outline: none; box-shadow: 0 0 5px rgba(230,126,34,0.3); }
-        .btn-submit { width: 100%; padding: 12px; background-color: #e67e22; color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 1em; cursor: pointer; transition: 0.3s; margin-bottom: 10px; }
-        .btn-submit:hover { background-color: #d35400; }
-        .error-message { color: #e74c3c; background-color: #fadbd8; padding: 10px; border-radius: 6px; font-size: 0.9em; font-weight: bold; margin-bottom: 20px; }
-        .links { font-size: 0.9em; color: #666; margin-top: 15px; }
-        .links a { color: #e67e22; text-decoration: none; font-weight: bold; }
-        .links a:hover { text-decoration: underline; }
+        .logo-container { text-align: center; margin-bottom: 20px; }
+        .logo { font-weight: 800; font-size: 2em; color: #2c3e50; text-decoration: none; display: inline-block; }
+        .logo span { color: #3498db; }
+
+        .auth-card h2 { color: #2c3e50; text-align: center; margin-top: 0; margin-bottom: 25px; font-weight: 700; font-size: 1.3em; }
+
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-weight: 600; margin-bottom: 8px; color: #475569; font-size: 0.9em; }
+        .input-group input { width: 100%; padding: 12px 15px; border: 2px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; transition: 0.3s; font-family: inherit; font-size: 1em; }
+        .input-group input:focus { border-color: #3498db; outline: none; background: #f8fafc; }
+
+        .btn-submit { width: 100%; padding: 14px; background-color: #3498db; color: white; border: none; border-radius: 8px; font-weight: 700; font-size: 1.1em; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .btn-submit:hover { background-color: #2980b9; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3); }
+
+        .error-message { background-color: #fef2f2; color: #e74c3c; padding: 12px; border-radius: 8px; font-size: 0.9em; font-weight: bold; margin-bottom: 20px; text-align: center; border: 1px solid #fecaca; }
+
+        .links { text-align: center; margin-top: 25px; font-size: 0.95em; color: #64748b; }
+        .links a { color: #3498db; text-decoration: none; font-weight: 700; transition: 0.3s; }
+        .links a:hover { color: #2980b9; text-decoration: underline; }
     </style>
 </head>
 <body>
 
 <div class="auth-card">
-    <h2>Bentornato!</h2>
+    <div class="logo-container">
+        <a href="/venues" class="logo">Trova<span>Locali</span></a>
+    </div>
+
+    <h2>Bentornato! Accedi</h2>
 
     {#if errore}
         <div class="error-message">{errore}</div>
