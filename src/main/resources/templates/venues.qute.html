@@ -149,9 +149,13 @@
         </select>
         <button type="submit" class="search-btn">Esplora</button>
     </div>
-    <div class="gps-row">
-        <input type="number" step="any" name="userLat" placeholder="Latitudine" value="{userLat ?: ''}">
-        <input type="number" step="any" name="userLon" placeholder="Longitudine" value="{userLon ?: ''}">
+    <div class="gps-row" style="display: flex; gap: 10px; align-items: center; justify-content: center; margin-top: 15px;">
+        <input type="number" step="any" id="userLat" name="userLat" placeholder="Latitudine" value="{userLat ?: ''}" style="padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
+        <input type="number" step="any" id="userLon" name="userLon" placeholder="Longitudine" value="{userLon ?: ''}" style="padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
+
+        <button type="button" onclick="getLocation()" style="background: #2ecc71; color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; white-space: nowrap;">
+            📍 Trova la mia posizione
+        </button>
     </div>
 </form>
 
@@ -211,6 +215,19 @@
     {/if}
 
 </main>
-
+<script>
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                document.getElementById("userLat").value = position.coords.latitude;
+                document.getElementById("userLon").value = position.coords.longitude;
+            }, function(error) {
+                alert("Errore nel recupero della posizione. Assicurati di aver dato i permessi cliccando su 'Consenti' nel browser.");
+            });
+        } else {
+            alert("La geolocalizzazione non è supportata da questo browser.");
+        }
+    }
+</script>
 </body>
 </html>
