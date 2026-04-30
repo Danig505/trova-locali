@@ -60,7 +60,7 @@ public class VenuePage {
         var ultimeAggiunte = venueRepository.getLatestVenues(10);
         List<Venue> listaLocali;
 
-        double actualRadius = (radius != null) ? radius : 5.0;
+        double actualRadius = (radius != null) ? radius : 2.0;
 
         if (userLat != null && userLon != null) {
             listaLocali = venueRepository.findNearbyVenues(userLat, userLon, actualRadius);

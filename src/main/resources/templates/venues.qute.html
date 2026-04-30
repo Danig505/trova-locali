@@ -155,7 +155,7 @@
         <input type="number" step="any" id="userLon" name="userLon" placeholder="Longitudine" value="{userLon ?: ''}" style="padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
 
         <select name="radius" style="padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-family: inherit; color: var(--dark); cursor: pointer;">
-            <option value="2" {#if radius == 2}selected{/if}>Entro 2 km</option>
+            <option value="2" {#if radius == 2 || radius == null}selected{/if}>Entro 2 km</option>
             <option value="5" {#if radius == 5 || radius == null}selected{/if}>Entro 5 km</option>
             <option value="10" {#if radius == 10}selected{/if}>Entro 10 km</option>
             <option value="25" {#if radius == 25}selected{/if}>Entro 25 km</option>
@@ -171,8 +171,13 @@
 <main class="main-content">
 
     <div class="results-header">
-        <h2>Esplora</h2>
-        <span>({recipes.size} risultati)</span>
+        {#if userLat != null && userLon != null}
+            <h2>📍 Vicino a te</h2>
+            <span style="margin-left: 10px; font-size: 0.9em;">(Entro {radius} km - {recipes.size} risultati)</span>
+        {#else}
+            <h2>Esplora</h2>
+            <span>({recipes.size} risultati)</span>
+        {/if}
     </div>
 
     {#if recipes.isEmpty()}
