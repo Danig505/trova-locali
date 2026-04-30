@@ -153,6 +153,14 @@
         <input type="number" step="any" id="userLat" name="userLat" placeholder="Latitudine" value="{userLat ?: ''}" style="padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
         <input type="number" step="any" id="userLon" name="userLon" placeholder="Longitudine" value="{userLon ?: ''}" style="padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
 
+        <select name="radius" style="padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-family: inherit; color: var(--dark); cursor: pointer;">
+            <option value="2" {#if radius == 2}selected{/if}>Entro 2 km</option>
+            <option value="5" {#if radius == 5 || radius == null}selected{/if}>Entro 5 km</option>
+            <option value="10" {#if radius == 10}selected{/if}>Entro 10 km</option>
+            <option value="25" {#if radius == 25}selected{/if}>Entro 25 km</option>
+            <option value="50" {#if radius == 50}selected{/if}>Entro 50 km</option>
+        </select>
+
         <button type="button" onclick="getLocation()" style="background: #2ecc71; color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; white-space: nowrap;">
             📍 Trova la mia posizione
         </button>

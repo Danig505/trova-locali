@@ -54,13 +54,16 @@ public class VenuePage {
             @QueryParam("search") String search,
             @QueryParam("category") String category,
             @QueryParam("userLat") Double userLat,
-            @QueryParam("userLon") Double userLon) {
+            @QueryParam("userLon") Double userLon,
+            @QueryParam("radius") Double radius) {
 
         var ultimeAggiunte = venueRepository.getLatestVenues(10);
         List<Venue> listaLocali;
 
+        double actualRadius = (radius != null) ? radius : 5.0;
+
         if (userLat != null && userLon != null) {
-            listaLocali = venueRepository.findNearbyVenues(userLat, userLon, 2.0);
+            listaLocali = venueRepository.findNearbyVenues(userLat, userLon, actualRadius);
         } else {
             listaLocali = venueRepository.getFilteredVenues(search, category);
         }
@@ -90,7 +93,8 @@ public class VenuePage {
                 .data("search", search)
                 .data("selectedCategory", category)
                 .data("userLat", userLat)
-                .data("userLon", userLon);
+                .data("userLon", userLon)
+                .data("radius", actualRadius);
     }
 
     @GET
