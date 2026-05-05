@@ -95,4 +95,9 @@ public class ReviewService {
             }
         }
     }
+
+    @Transactional
+    public void deleteReviewById(int reviewId) {
+        reviewRepository.deleteById((long) reviewId);
+    }
 }

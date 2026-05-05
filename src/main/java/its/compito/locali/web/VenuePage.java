@@ -277,4 +277,24 @@ public class VenuePage {
         reviewService.deleteReview(venueId, username);
         return Response.seeOther(URI.create("/venues/" + venueId)).build();
     }
+
+    @GET
+    @Path("/review/{reviewId}/delete-by-mod")
+    @Authenticated
+    @Transactional
+    public Response deleteReviewByMod(
+            @PathParam("reviewId") int reviewId,
+            @QueryParam("venueId") int venueId,
+            @Context SecurityContext securityContext) {
+
+        boolean isMod = securityContext.isUserInRole("MODERATOR") || securityContext.isUserInRole("ADMIN");
+
+        if (!isMod) {
+            return Response.status(Response.Status.FORBIDDEN).entity("Accesso negato. Solo i moderatori possono usare questa funzione.").build();
+        }
+
+        reviewService.deleteReviewById(reviewId);
+
+        return Response.seeOther(URI.create("/venues/" + venueId)).build();
+    }
 }
