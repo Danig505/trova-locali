@@ -224,14 +224,16 @@
             {#for r in approvedReviews}
                 <div class="review-card">
                     <div class="review-header">
-                        <strong>👤 {r.user.username}</strong>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <strong>👤 {r.user.username}</strong>
 
-                        {#if role == 'MODERATOR' || role == 'ADMIN'}
-                            <button style="background:none; border:none; color: var(--danger); font-size: 0.8em; font-weight: bold; cursor:pointer; margin-left: 10px;"
-                                    onclick="openModal('/venues/review/{r.id}/delete-by-mod?venueId={recipe.id}', '🛠️ Azione Moderatore', 'Sei sicuro di voler forzare l\'eliminazione di questa recensione come Moderatore?')">
-                                🗑️ Elimina (Mod)
-                            </button>
-                        {/if}
+                            {#if role == 'MODERATOR' || role == 'ADMIN'}
+                                <button style="background:none; border:none; color: var(--danger); font-size: 0.8em; font-weight: bold; cursor:pointer;"
+                                        onclick="openModal('/venues/review/{r.id}/delete-by-mod?venueId={recipe.id}', '🛠️ Azione Moderatore', 'Sei sicuro di voler forzare l\'eliminazione di questa recensione come Moderatore?')">
+                                    🗑️ Elimina (Mod)
+                                </button>
+                            {/if}
+                        </div>
 
                         <span class="star-rating">
                             {#if r.rating == 5}⭐⭐⭐⭐⭐{/if}
