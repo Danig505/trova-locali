@@ -11,12 +11,13 @@ import its.compito.locali.persistence.entity.Venue;
 import its.compito.locali.persistence.repository.UserRepository;
 import its.compito.locali.persistence.repository.VenueRepository;
 import its.compito.locali.service.ReviewService;
-import jakarta.transaction.Transactional;
+import its.compito.locali.service.VenueService;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,23 +28,28 @@ public class VenuePage {
     private final Template venuesTemplate;
     private final Template venueDetailTemplate;
     private final Template venueFormTemplate;
+
     private final VenueRepository venueRepository;
-    private final ReviewService reviewService;
     private final UserRepository userRepository;
+
+    private final ReviewService reviewService;
+    private final VenueService venueService; // <-- Aggiunto il VenueService!
 
     public VenuePage(
             @Location("venues.qute.html") Template venuesTemplate,
             @Location("venue_detail.qute.html") Template venueDetailTemplate,
             @Location("venue_form.qute.html") Template venueFormTemplate,
             VenueRepository venueRepository,
+            UserRepository userRepository,
             ReviewService reviewService,
-            UserRepository userRepository) {
+            VenueService venueService) {
         this.venuesTemplate = venuesTemplate;
         this.venueDetailTemplate = venueDetailTemplate;
         this.venueFormTemplate = venueFormTemplate;
         this.venueRepository = venueRepository;
-        this.reviewService = reviewService;
         this.userRepository = userRepository;
+        this.reviewService = reviewService;
+        this.venueService = venueService;
     }
 
     @GET
@@ -149,10 +155,10 @@ public class VenuePage {
                 .data("creatorName", creatorName);
     }
 
+    // NESSUN TRANSACTIONAL QUI!
     @GET
     @Path("/delete/{id}")
     @Authenticated
-    @Transactional
     public Response deleteVenue(@PathParam("id") int id, @Context SecurityContext securityContext) {
         Venue venue = venueRepository.findById(id);
         if (venue == null) return Response.status(404).build();
@@ -165,7 +171,9 @@ public class VenuePage {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
 
-        venueRepository.deleteById(id);
+        // Il controller si limita a chiamare il Service
+        venueService.deleteVenueById(id);
+
         return Response.seeOther(java.net.URI.create("/venues")).build();
     }
 
@@ -196,10 +204,10 @@ public class VenuePage {
         return Response.ok(venueFormTemplate.data("recipe", venue)).build();
     }
 
+    // NESSUN TRANSACTIONAL QUI!
     @POST
     @Path("/save")
     @Authenticated
-    @Transactional
     public Response saveVenue(
             @FormParam("id") String idStr,
             @FormParam("title") String title,
@@ -215,45 +223,35 @@ public class VenuePage {
         User currentUser = userRepository.findByUsername(username);
         boolean isMod = securityContext.isUserInRole("MODERATOR") || securityContext.isUserInRole("ADMIN");
 
-        boolean isNew = (idStr == null || idStr.trim().isEmpty());
-        Venue venue;
+        Integer parsedId = (idStr == null || idStr.trim().isEmpty()) ? null : Integer.parseInt(idStr);
 
-        if (isNew) {
-            venue = new Venue();
-            venue.setUserId(currentUser.getId());
-        } else {
-            venue = venueRepository.findById(Integer.parseInt(idStr));
+        // Controllo di sicurezza: se sto modificando, devo essere l'autore o un mod
+        if (parsedId != null) {
+            Venue venue = venueRepository.findById(parsedId);
             if (venue == null) return Response.status(404).build();
             if (!isMod && venue.getUserId() != currentUser.getId()) {
                 return Response.status(Response.Status.FORBIDDEN).build();
             }
         }
 
-        venue.setTitle(title);
-        venue.setDescription(description);
-        venue.setAddress(address);
-        if (latitude != null) venue.setLatitude(latitude);
-        if (longitude != null) venue.setLongitude(longitude);
-        if (categories != null) venue.setCategories(categories);
-
+        // Formatto le foto prima di passarle al database
+        List<String> photoList = new ArrayList<>();
         if (photosRaw != null && !photosRaw.trim().isEmpty()) {
-            List<String> photoList = new ArrayList<>(java.util.Arrays.asList(photosRaw.split("\\r?\\n")));
+            photoList = new ArrayList<>(java.util.Arrays.asList(photosRaw.split("\\r?\\n")));
             photoList.replaceAll(String::trim);
             photoList.removeIf(String::isEmpty);
-            venue.setPhotos(photoList);
-        } else {
-            venue.setPhotos(new ArrayList<>());
         }
 
-        if (isNew) venueRepository.persist(venue);
+        // Chiamo il Service! Qui si apre la transazione veloce.
+        venueService.saveOrUpdateVenue(parsedId, title, description, address, latitude, longitude, categories, photoList, currentUser.getId());
 
         return Response.seeOther(java.net.URI.create("/venues")).build();
     }
 
+    // NESSUN TRANSACTIONAL QUI (lo gestisce il ReviewService internamente)
     @POST
     @Path("/{id}/review")
     @Authenticated
-    @Transactional
     public Response postReview(
             @PathParam("id") int venueId,
             @FormParam("rating") int rating,
@@ -265,10 +263,10 @@ public class VenuePage {
         return Response.seeOther(URI.create("/venues/" + venueId)).build();
     }
 
+    // NESSUN TRANSACTIONAL QUI
     @GET
     @Path("/{id}/review/delete")
     @Authenticated
-    @Transactional
     public Response deleteReview(
             @PathParam("id") int venueId,
             @Context SecurityContext securityContext) {
@@ -278,10 +276,10 @@ public class VenuePage {
         return Response.seeOther(URI.create("/venues/" + venueId)).build();
     }
 
+    // NESSUN TRANSACTIONAL QUI
     @GET
     @Path("/review/{reviewId}/delete-by-mod")
     @Authenticated
-    @Transactional
     public Response deleteReviewByMod(
             @PathParam("reviewId") int reviewId,
             @QueryParam("venueId") int venueId,
